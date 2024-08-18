@@ -14,7 +14,8 @@ use ratatui::{
 
 #[derive(Debug, Default)]
 pub struct App {
-    counter: u8,
+    card_counter: u8, // Card counter 0 indexed
+    show_back: bool,
     exit: bool,
 }
 
@@ -52,14 +53,20 @@ impl App {
     }
 
     fn increment_counter(&mut self) {
-        if self.counter < u8::max_value() {
-            self.counter += 1;
+        if self.card_counter < u8::max_value() || !self.show_back {
+            if self.show_back {
+                self.card_counter += 1;
+            }
+            self.show_back = !self.show_back;
         }
     }
 
     fn decrement_counter(&mut self) {
-        if self.counter != 0 {
-            self.counter -= 1;
+        if self.card_counter != 0 || self.show_back {
+            self.show_back = !self.show_back;
+            if self.show_back {
+                self.card_counter -= 1;
+            }
         }
     }
 
@@ -76,6 +83,8 @@ impl Widget for &App {
             "<Left>".blue().bold(),
             " Next ".into(),
             "<Right>".blue().bold(),
+            " Quit ".into(),
+            "<Q> ".blue().bold(),
         ]));
         let block = Block::bordered()
             .title(title.alignment(Alignment::Center))
@@ -86,10 +95,17 @@ impl Widget for &App {
             )
             .border_set(border::THICK);
 
-        let counter_text = Text::from(vec![Line::from(vec![
-            "Value: ".into(),
-            self.counter.to_string().yellow(),
-        ])]);
+        let counter_text = Text::from(vec![
+            Line::from(vec![
+                "Value: ".into(),
+                self.card_counter.to_string().yellow(),
+            ]),
+            Line::from(if self.show_back {
+                String::from("Back")
+            } else {
+                String::from("front")
+            }),
+        ]);
 
         Paragraph::new(counter_text)
             .centered()
