@@ -1,3 +1,4 @@
+mod cards;
 mod tui;
 
 use std::io::{self};
@@ -14,7 +15,7 @@ use ratatui::{
 
 #[derive(Debug, Default)]
 pub struct App {
-    card_counter: u8, // Card counter 0 indexed
+    card_counter: usize, // Card counter 0 indexed
     show_back: bool,
     exit: bool,
 }
@@ -53,7 +54,10 @@ impl App {
     }
 
     fn increment_counter(&mut self) {
-        if self.card_counter < u8::max_value() || !self.show_back {
+        if (self.card_counter < usize::max_value()
+            && self.card_counter < cards::get_deck().len() - 1)
+            || !self.show_back
+        {
             if self.show_back {
                 self.card_counter += 1;
             }
@@ -95,16 +99,19 @@ impl Widget for &App {
             )
             .border_set(border::THICK);
 
+        let cards = cards::get_deck();
+
         let counter_text = Text::from(vec![
             Line::from(vec![
                 "Value: ".into(),
                 self.card_counter.to_string().yellow(),
             ]),
-            Line::from(if self.show_back {
-                String::from("Back")
+            Line::from(cards[self.card_counter].front.as_str()),
+            if self.show_back {
+                Line::from(cards[self.card_counter].back.as_str())
             } else {
-                String::from("front")
-            }),
+                Line::from("")
+            },
         ]);
 
         Paragraph::new(counter_text)
