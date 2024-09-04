@@ -3,7 +3,7 @@ mod tui;
 
 use std::io::{self};
 
-use cards::Card;
+use cards::{get_deck, Card};
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind};
 use ratatui::{
     layout::Alignment,
@@ -20,10 +20,14 @@ pub struct App {
     show_back: bool,
     exit: bool,
     spent_cards: Vec<Card>,
+    cards: Vec<Card>,
 }
 
 impl App {
     pub fn run(&mut self, terminal: &mut tui::Tui) -> io::Result<()> {
+        self.cards = get_deck();
+        self.spent_cards = vec![];
+
         while !self.exit {
             terminal.draw(|frame| self.render_frame(frame))?;
             self.handle_events()?;
@@ -56,12 +60,12 @@ impl App {
     }
 
     fn increment_counter(&mut self) {
-        let cards = cards::get_deck();
-        if (self.card_counter < usize::max_value()
-            && self.card_counter < cards::get_deck().len() - 1)
+        if (self.card_counter < usize::max_value() && self.card_counter < self.cards.len() - 1)
             || !self.show_back
         {
             if self.show_back {
+                // let card = self.cards.remove(self.card_counter);
+                // self.spent_cards.push(card);
                 self.card_counter += 1;
             }
             self.show_back = !self.show_back;
@@ -102,16 +106,16 @@ impl Widget for &App {
             )
             .border_set(border::THICK);
 
-        let cards = cards::get_deck();
-
         let counter_text = Text::from(vec![
             Line::from(vec![
-                "Value: ".into(),
+                "Card number: ".into(),
                 self.card_counter.to_string().yellow(),
+                " In Deck: ".into(),
+                self.cards.len().to_string().into(),
             ]),
-            Line::from(cards[self.card_counter].front.as_str()),
+            Line::from(self.cards[self.card_counter].front.as_str()),
             if self.show_back {
-                Line::from(cards[self.card_counter].back.as_str())
+                Line::from(self.cards[self.card_counter].back.as_str())
             } else {
                 Line::from("")
             },
