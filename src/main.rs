@@ -63,8 +63,11 @@ impl App {
 
     fn increment_counter(&mut self) {
         if self.show_back {
-            let card = self.cards.pop().unwrap();
-            self.current_card = card;
+            let card = self.cards.pop();
+            match card {
+                Some(card) => self.current_card = card,
+                None => self.exit(),
+            };
         }
         self.show_back = !self.show_back;
     }
