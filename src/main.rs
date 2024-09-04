@@ -28,7 +28,7 @@ impl App {
     pub fn run(&mut self, terminal: &mut tui::Tui) -> io::Result<()> {
         self.cards = get_deck();
         self.spent_cards = vec![];
-        self.current_card = self.cards.remove(self.card_counter);
+        self.current_card = self.cards.pop().unwrap();
 
         while !self.exit {
             terminal.draw(|frame| self.render_frame(frame))?;
@@ -62,25 +62,15 @@ impl App {
     }
 
     fn increment_counter(&mut self) {
-        if (self.card_counter < usize::max_value() && self.card_counter < self.cards.len() - 1)
-            || !self.show_back
-        {
-            if self.show_back {
-                let card = self.cards.pop().unwrap();
-                self.current_card = card;
-                self.card_counter += 1;
-            }
-            self.show_back = !self.show_back;
+        if self.show_back {
+            let card = self.cards.pop().unwrap();
+            self.current_card = card;
         }
+        self.show_back = !self.show_back;
     }
 
     fn decrement_counter(&mut self) {
-        if self.card_counter != 0 || self.show_back {
-            self.show_back = !self.show_back;
-            if self.show_back {
-                self.card_counter -= 1;
-            }
-        }
+        self.show_back = !self.show_back;
     }
 
     fn exit(&mut self) {
