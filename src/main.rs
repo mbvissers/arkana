@@ -3,6 +3,7 @@ mod tui;
 
 use std::io::{self};
 
+use cards::Card;
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind};
 use ratatui::{
     layout::Alignment,
@@ -18,6 +19,7 @@ pub struct App {
     card_counter: usize, // Card counter 0 indexed
     show_back: bool,
     exit: bool,
+    spent_cards: Vec<Card>,
 }
 
 impl App {
@@ -54,6 +56,7 @@ impl App {
     }
 
     fn increment_counter(&mut self) {
+        let cards = cards::get_deck();
         if (self.card_counter < usize::max_value()
             && self.card_counter < cards::get_deck().len() - 1)
             || !self.show_back
