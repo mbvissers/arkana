@@ -2,6 +2,7 @@
 name = "arkana"
 version = "0.1.0"
 edition = "2021"
+license-file = "MIT"
 
 [dependencies]
 crossterm = "0.28"
