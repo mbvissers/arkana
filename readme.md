@@ -1,4 +1,4 @@
-# Arkana
+# Arkana 🧝‍♀️
 
 > Another Rust Kana app
 
