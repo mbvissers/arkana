@@ -73,7 +73,7 @@ impl App {
     }
 
     fn decrement_counter(&mut self) {
-        self.show_back = !self.show_back;
+        // self.show_back = !self.show_back;
     }
 
     fn exit(&mut self) {
@@ -92,7 +92,7 @@ impl Widget for &App {
             " Quit ".into(),
             "<Q> ".blue().bold(),
         ]));
-        let block = Block::bordered()
+        let block = Block::new()
             .title(title.alignment(Alignment::Center))
             .title(
                 instructions

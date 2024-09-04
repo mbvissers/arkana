@@ -1,3 +1,5 @@
+use rand::{seq::SliceRandom, thread_rng};
+
 #[derive(Debug, Default)]
 pub struct Card {
     pub front: String,
@@ -192,5 +194,6 @@ pub fn get_deck() -> Vec<Card> {
         },
     ];
     hiragana_cards.reverse();
+    hiragana_cards.shuffle(&mut thread_rng());
     hiragana_cards
 }
