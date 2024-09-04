@@ -21,12 +21,14 @@ pub struct App {
     exit: bool,
     spent_cards: Vec<Card>,
     cards: Vec<Card>,
+    current_card: Card,
 }
 
 impl App {
     pub fn run(&mut self, terminal: &mut tui::Tui) -> io::Result<()> {
         self.cards = get_deck();
         self.spent_cards = vec![];
+        self.current_card = self.cards.remove(self.card_counter);
 
         while !self.exit {
             terminal.draw(|frame| self.render_frame(frame))?;
@@ -64,8 +66,8 @@ impl App {
             || !self.show_back
         {
             if self.show_back {
-                // let card = self.cards.remove(self.card_counter);
-                // self.spent_cards.push(card);
+                let card = self.cards.pop().unwrap();
+                self.current_card = card;
                 self.card_counter += 1;
             }
             self.show_back = !self.show_back;
@@ -113,9 +115,9 @@ impl Widget for &App {
                 " In Deck: ".into(),
                 self.cards.len().to_string().into(),
             ]),
-            Line::from(self.cards[self.card_counter].front.as_str()),
+            Line::from(self.current_card.front.as_str()),
             if self.show_back {
-                Line::from(self.cards[self.card_counter].back.as_str())
+                Line::from(self.current_card.back.as_str())
             } else {
                 Line::from("")
             },

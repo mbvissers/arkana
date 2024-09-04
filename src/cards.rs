@@ -1,11 +1,11 @@
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct Card {
     pub front: String,
     pub back: String,
 }
 
 pub fn get_deck() -> Vec<Card> {
-    let hiragana_cards = vec![
+    let mut hiragana_cards = vec![
         Card {
             front: String::from("あ"),
             back: String::from("A"),
@@ -191,5 +191,6 @@ pub fn get_deck() -> Vec<Card> {
             back: String::from("N"),
         },
     ];
+    hiragana_cards.reverse();
     hiragana_cards
 }
