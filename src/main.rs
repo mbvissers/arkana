@@ -1,21 +1,23 @@
 mod cards;
 mod tui;
+mod widgets;
 
 use std::io::{self};
 
 use cards::{get_deck, Card};
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind};
 use ratatui::{
-    layout::Alignment,
+    layout::{Alignment, Constraint, Flex, Layout},
     style::Stylize,
     symbols::border,
     text::{Line, Text},
     widgets::{block::Title, Block, Paragraph, Widget},
     Frame,
 };
+use widgets::render_card;
 
 #[derive(Debug, Default)]
-pub struct App {
+pub struct ArkanaApp {
     card_counter: usize, // Card counter 0 indexed
     show_back: bool,
     exit: bool,
@@ -24,7 +26,7 @@ pub struct App {
     current_card: Card,
 }
 
-impl App {
+impl ArkanaApp {
     pub fn run(&mut self, terminal: &mut tui::Tui) -> io::Result<()> {
         self.cards = get_deck();
         self.spent_cards = vec![];
@@ -39,7 +41,16 @@ impl App {
     }
 
     fn render_frame(&self, frame: &mut Frame) {
-        frame.render_widget(self, frame.area());
+        let main_layout =
+            Layout::vertical([Constraint::Max(2), Constraint::Fill(0), Constraint::Max(2)])
+                .flex(Flex::SpaceBetween);
+
+        let [header_area, body_area, footer_area] = main_layout.areas(frame.area());
+
+        // frame.render_widget(self, header_area);
+        render_card(frame, header_area, &self.current_card, self.show_back);
+        render_card(frame, body_area, &self.current_card, self.show_back);
+        render_card(frame, footer_area, &self.current_card, self.show_back);
     }
 
     fn handle_events(&mut self) -> io::Result<()> {
@@ -81,9 +92,14 @@ impl App {
     }
 }
 
-impl Widget for &App {
+impl Widget for &ArkanaApp {
     fn render(self, area: ratatui::prelude::Rect, buf: &mut ratatui::prelude::Buffer) {
+        let layout =
+            Layout::horizontal([Constraint::Max(2), Constraint::Min(2), Constraint::Min(2)])
+                .flex(Flex::SpaceBetween);
+
         let title = Title::from(" Arkana ".bold());
+
         let instructions = Title::from(Line::from(vec![
             " Back ".into(),
             "<Left>".blue().bold(),
@@ -92,7 +108,8 @@ impl Widget for &App {
             " Quit ".into(),
             "<Q> ".blue().bold(),
         ]));
-        let block = Block::new()
+
+        let counter_block = Block::new()
             .title(title.alignment(Alignment::Center))
             .title(
                 instructions
@@ -101,31 +118,37 @@ impl Widget for &App {
             )
             .border_set(border::THICK);
 
-        let counter_text = Text::from(vec![
-            Line::from(vec![
-                "Card number: ".into(),
-                self.card_counter.to_string().yellow(),
-                " In Deck: ".into(),
-                self.cards.len().to_string().into(),
-            ]),
-            Line::from(self.current_card.front.as_str()),
-            if self.show_back {
-                Line::from(self.current_card.back.as_str())
-            } else {
-                Line::from("")
-            },
-        ]);
+        let counter_text = Text::from(vec![Line::from(vec![
+            "Card number: ".into(),
+            self.card_counter.to_string().yellow(),
+            " In Deck: ".into(),
+            self.cards.len().to_string().into(),
+            " ".into(),
+            self.show_back.to_string().into(),
+        ])])
+        .alignment(Alignment::Center);
+
+        // let card_text = Text::from(vec![
+        //     Line::from(self.current_card.front.as_str()),
+        //     if self.show_back {
+        //         Line::from(self.current_card.back.as_str()).alignment(Alignment::Center)
+        //     } else {
+        //         Line::from("")
+        //     },
+        // ]);
 
         Paragraph::new(counter_text)
             .centered()
-            .block(block)
+            .block(counter_block)
             .render(area, buf);
+
+        // render_card(self, area, self.current_card, self.show_back);
     }
 }
 
 fn main() -> io::Result<()> {
     let mut terminal = tui::init()?;
-    let app_result = App::default().run(&mut terminal);
+    let app_result = ArkanaApp::default().run(&mut terminal);
 
     tui::restore()?;
     app_result
