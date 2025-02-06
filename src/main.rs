@@ -14,7 +14,7 @@ use ratatui::{
     widgets::{block::Title, Block, Paragraph, Widget},
     Frame,
 };
-use widgets::render_card;
+use widgets::{render_card, render_controls, render_title};
 
 #[derive(Debug, Default)]
 pub struct ArkanaApp {
@@ -48,9 +48,10 @@ impl ArkanaApp {
         let [header_area, body_area, footer_area] = main_layout.areas(frame.area());
 
         // frame.render_widget(self, header_area);
-        render_card(frame, header_area, &self.current_card, self.show_back);
+        render_title(frame, header_area);
+        // TODO: Center this one
         render_card(frame, body_area, &self.current_card, self.show_back);
-        render_card(frame, footer_area, &self.current_card, self.show_back);
+        render_controls(frame, footer_area);
     }
 
     fn handle_events(&mut self) -> io::Result<()> {
