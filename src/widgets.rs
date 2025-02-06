@@ -10,10 +10,6 @@ use ratatui::{
 
 use crate::cards::Card;
 
-pub fn calculate_layout() {
-    todo!()
-}
-
 pub fn render_title(frame: &mut Frame, area: Rect) {
     let text = Text::from(Line::from(Span::styled(
         " Arkana ",

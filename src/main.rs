@@ -95,29 +95,8 @@ impl ArkanaApp {
 
 impl Widget for &ArkanaApp {
     fn render(self, area: ratatui::prelude::Rect, buf: &mut ratatui::prelude::Buffer) {
-        let layout =
-            Layout::horizontal([Constraint::Max(2), Constraint::Min(2), Constraint::Min(2)])
-                .flex(Flex::SpaceBetween);
-
-        let title = Title::from(" Arkana ".bold());
-
-        let instructions = Title::from(Line::from(vec![
-            " Back ".into(),
-            "<Left>".blue().bold(),
-            " Next ".into(),
-            "<Right>".blue().bold(),
-            " Quit ".into(),
-            "<Q> ".blue().bold(),
-        ]));
-
-        let counter_block = Block::new()
-            .title(title.alignment(Alignment::Center))
-            .title(
-                instructions
-                    .alignment(Alignment::Center)
-                    .position(ratatui::widgets::block::Position::Bottom),
-            )
-            .border_set(border::THICK);
+        //! Unused code: render in widgets.rs and remove here
+        let counter_block = Block::new().border_set(border::THICK);
 
         let counter_text = Text::from(vec![Line::from(vec![
             "Card number: ".into(),
@@ -129,21 +108,10 @@ impl Widget for &ArkanaApp {
         ])])
         .alignment(Alignment::Center);
 
-        // let card_text = Text::from(vec![
-        //     Line::from(self.current_card.front.as_str()),
-        //     if self.show_back {
-        //         Line::from(self.current_card.back.as_str()).alignment(Alignment::Center)
-        //     } else {
-        //         Line::from("")
-        //     },
-        // ]);
-
         Paragraph::new(counter_text)
             .centered()
             .block(counter_block)
             .render(area, buf);
-
-        // render_card(self, area, self.current_card, self.show_back);
     }
 }
 
