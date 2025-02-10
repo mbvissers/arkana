@@ -7,14 +7,10 @@ use std::io::{self};
 use cards::{get_deck, Card};
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind};
 use ratatui::{
-    layout::{Alignment, Constraint, Flex, Layout},
-    style::Stylize,
-    symbols::border,
-    text::{Line, Text},
-    widgets::{block::Title, Block, Paragraph, Widget},
+    layout::{Constraint, Flex, Layout},
     Frame,
 };
-use widgets::{render_card, render_controls, render_title};
+use widgets::{render_card, render_controls, render_counter, render_title};
 
 #[derive(Debug, Default)]
 pub struct ArkanaApp {
@@ -41,15 +37,19 @@ impl ArkanaApp {
     }
 
     fn render_frame(&self, frame: &mut Frame) {
-        let main_layout =
-            Layout::vertical([Constraint::Max(2), Constraint::Fill(0), Constraint::Max(2)])
-                .flex(Flex::SpaceBetween);
+        let main_layout = Layout::vertical([
+            Constraint::Max(1),
+            Constraint::Max(1),
+            Constraint::Min(2),
+            Constraint::Max(1),
+        ])
+        .flex(Flex::SpaceBetween);
 
-        let [header_area, body_area, footer_area] = main_layout.areas(frame.area());
+        let [header_area, counter_area, body_area, footer_area] = main_layout.areas(frame.area());
 
-        // frame.render_widget(self, header_area);
         render_title(frame, header_area);
-        // TODO: Center this one
+        render_counter(frame, counter_area, &self.card_counter, &self.cards.len());
+        // TODO: Vertically center this one
         render_card(frame, body_area, &self.current_card, self.show_back);
         render_controls(frame, footer_area);
     }
@@ -73,11 +73,14 @@ impl ArkanaApp {
         }
     }
 
-    fn increment_counter(&mut self) {
+    fn increment_counter(&mut self) -> () {
         if self.show_back {
             let card = self.cards.pop();
             match card {
-                Some(card) => self.current_card = card,
+                Some(card) => {
+                    self.current_card = card;
+                    self.card_counter += 1;
+                }
                 None => self.exit(),
             };
         }
@@ -90,28 +93,6 @@ impl ArkanaApp {
 
     fn exit(&mut self) {
         self.exit = true;
-    }
-}
-
-impl Widget for &ArkanaApp {
-    fn render(self, area: ratatui::prelude::Rect, buf: &mut ratatui::prelude::Buffer) {
-        //! Unused code: render in widgets.rs and remove here
-        let counter_block = Block::new().border_set(border::THICK);
-
-        let counter_text = Text::from(vec![Line::from(vec![
-            "Card number: ".into(),
-            self.card_counter.to_string().yellow(),
-            " In Deck: ".into(),
-            self.cards.len().to_string().into(),
-            " ".into(),
-            self.show_back.to_string().into(),
-        ])])
-        .alignment(Alignment::Center);
-
-        Paragraph::new(counter_text)
-            .centered()
-            .block(counter_block)
-            .render(area, buf);
     }
 }
 
