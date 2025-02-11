@@ -37,7 +37,7 @@ pub fn render_card(frame: &mut Frame, area: Rect, card: &Card, show_back: bool) 
     let back_text = if show_back { card.back.as_str() } else { "" };
 
     let centered_width = front_text.len().max(back_text.len()) as u16; // Approximation of the text width
-    let centered_height = if show_back { 2 } else { 1 }; // Number of lines
+    let centered_height = 2;
 
     // Calculate the centered area for the text
     let centered_x = area.x + (area.width.saturating_sub(centered_width)) / 2;
