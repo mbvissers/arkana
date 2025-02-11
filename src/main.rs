@@ -49,7 +49,6 @@ impl ArkanaApp {
 
         render_title(frame, header_area);
         render_counter(frame, counter_area, &self.card_counter, &self.cards.len());
-        // TODO: Vertically center this one
         render_card(frame, body_area, &self.current_card, self.show_back);
         render_controls(frame, footer_area);
     }
@@ -74,6 +73,7 @@ impl ArkanaApp {
     }
 
     fn increment_counter(&mut self) -> () {
+        // TODO: Add card to spent_cards
         if self.show_back {
             let card = self.cards.pop();
             match card {
@@ -88,7 +88,16 @@ impl ArkanaApp {
     }
 
     fn decrement_counter(&mut self) {
+        // TODO: Retrieve card from spent_cards to go back
+        // TODO: Put card back into deck
         // self.show_back = !self.show_back;
+        let card = self.spent_cards.pop();
+        match card {
+            Some(card) => {
+                self.current_card = card;
+            }
+            None => (),
+        }
     }
 
     fn exit(&mut self) {

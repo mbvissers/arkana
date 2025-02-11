@@ -1,10 +1,8 @@
-// TODO: Move widgets here, functions to generate Widget object
-// TODO: https://ratatui.rs/examples/widgets/block/
 use ratatui::{
     layout::{Alignment, Constraint, Flex, Layout, Rect},
     style::{Color, Modifier, Style, Stylize},
     text::{Line, Span, Text},
-    widgets::{block::Title, Block, Paragraph},
+    widgets::Paragraph,
     Frame,
 };
 
@@ -34,14 +32,25 @@ pub fn render_counter(frame: &mut Frame, area: Rect, card_counter: &usize, card_
 }
 
 pub fn render_card(frame: &mut Frame, area: Rect, card: &Card, show_back: bool) {
-    let [centered_area] = Layout::horizontal([Constraint::Percentage(20)])
-        .flex(Flex::Center)
-        .areas(area);
+    // Get the text dimensions
+    let front_text = card.front.as_str();
+    let back_text = if show_back { card.back.as_str() } else { "" };
 
-    let [centered_area] = Layout::vertical([Constraint::Percentage(50)])
-        .flex(Flex::Center)
-        .areas(centered_area);
+    let centered_width = front_text.len().max(back_text.len()) as u16; // Approximation of the text width
+    let centered_height = if show_back { 2 } else { 1 }; // Number of lines
 
+    // Calculate the centered area for the text
+    let centered_x = area.x + (area.width.saturating_sub(centered_width)) / 2;
+    let centered_y = area.y + (area.height.saturating_sub(centered_height)) / 2;
+
+    let centered_area = Rect {
+        x: centered_x,
+        y: centered_y,
+        width: centered_width,
+        height: centered_height,
+    };
+
+    // Render the centered text
     frame.render_widget(
         Text::from(vec![
             Line::from(vec![Span::styled(
@@ -53,10 +62,9 @@ pub fn render_card(frame: &mut Frame, area: Rect, card: &Card, show_back: bool) 
             } else {
                 Line::from("")
             },
-        ])
-        .centered(),
+        ]),
         centered_area,
-    )
+    );
 }
 
 pub fn render_controls(frame: &mut Frame, area: Rect) {
