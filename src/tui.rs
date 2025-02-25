@@ -44,6 +44,7 @@ pub struct ArkanaApp {
 
 impl ArkanaApp {
     pub fn run(&mut self, terminal: &mut Tui) -> io::Result<()> {
+        // TODO: Use string from args instead of ""
         self.cards = get_deck(String::from("")).unwrap();
 
         if self.cards.len() < 1 {
