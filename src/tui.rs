@@ -43,9 +43,9 @@ pub struct ArkanaApp {
 }
 
 impl ArkanaApp {
-    pub fn run(&mut self, terminal: &mut Tui) -> io::Result<()> {
+    pub fn run(&mut self, terminal: &mut Tui, file_path: &str) -> io::Result<()> {
         // TODO: Use string from args instead of ""
-        self.cards = get_deck(String::from("")).unwrap();
+        self.cards = get_deck(String::from(file_path)).unwrap();
 
         if self.cards.len() < 1 {
             panic!("No cards in deck");

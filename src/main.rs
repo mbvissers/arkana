@@ -11,18 +11,12 @@ use tui::ArkanaApp;
 
 fn main() -> io::Result<()> {
     let args = Args::parse();
-
-    match args.csv {
-        Some(path) => {
-            println!("Loading cards from {}", path);
-        }
-        _ => {
-            println!("Loading cards from default path");
-        }
-    }
-
     let mut terminal = tui::init()?;
-    let app_result = ArkanaApp::default().run(&mut terminal);
+
+    let app_result = match args.csv {
+        Some(path) => ArkanaApp::default().run(&mut terminal, path.as_str()),
+        _ => ArkanaApp::default().run(&mut terminal, ""),
+    };
 
     tui::restore()?;
     app_result
