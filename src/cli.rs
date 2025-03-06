@@ -7,12 +7,11 @@ use clap::Parser;
 pub struct Args {
     #[arg(short = 'f', long, help = "Load cards from a CSV file")]
     pub csv: Option<String>,
-    // TODO: Add delimiter option for custom CSVs
-    // #[arg(
-    //     short = 'd',
-    //     long = "Delimiter",
-    //     help = "Choose delimiter, default ','"
-    //
-    // )]
-    // pub delim: String,
+
+    #[arg(
+        short = 'd',
+        long = "Delimiter",
+        help = "Choose delimiter, default ','"
+    )]
+    pub delim: Option<String>,
 }

@@ -17,7 +17,7 @@ pub fn get_deck(path: String) -> Result<Vec<Card>, Box<dyn Error>> {
 
     let file = File::open(Path::new(path))
         .expect(String::from(format!("Could not open file {}", path)).as_str());
-    let mut reader = csv::Reader::from_reader(file);
+    let mut reader = csv::ReaderBuilder::new().delimiter(b',').from_reader(file);
 
     let mut deck: Vec<Card> = Vec::new();
 

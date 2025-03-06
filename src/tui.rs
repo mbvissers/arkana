@@ -20,6 +20,16 @@ use crate::{
 
 pub type Tui = Terminal<CrosstermBackend<Stdout>>;
 
+#[derive(Debug, Default)]
+pub struct ArkanaApp {
+    card_counter: usize, // Card counter 0 indexed
+    show_back: bool,
+    exit: bool,
+    spent_cards: Vec<Card>,
+    cards: Vec<Card>,
+    current_card: Card,
+}
+
 pub fn init() -> io::Result<Tui> {
     execute!(stdout(), EnterAlternateScreen)?;
     enable_raw_mode()?;
@@ -32,20 +42,17 @@ pub fn restore() -> io::Result<()> {
     Ok(())
 }
 
-#[derive(Debug, Default)]
-pub struct ArkanaApp {
-    card_counter: usize, // Card counter 0 indexed
-    show_back: bool,
-    exit: bool,
-    spent_cards: Vec<Card>,
-    cards: Vec<Card>,
-    current_card: Card,
+// TODO: App Config (file path, delim, header, etc.)
+pub struct AppConfig {
+    pub file_path: Option<String>,
+    pub delimiter: Option<String>,
+    pub header: Option<bool>,
 }
 
 impl ArkanaApp {
-    pub fn run(&mut self, terminal: &mut Tui, file_path: &str) -> io::Result<()> {
-        // TODO: Use string from args instead of ""
-        self.cards = get_deck(String::from(file_path)).unwrap();
+    // TODO: Use AppConfig
+    pub fn run(&mut self, terminal: &mut Tui, config: AppConfig) -> io::Result<()> {
+        self.cards = get_deck(config.file_path.unwrap()).unwrap();
 
         if self.cards.len() < 1 {
             panic!("No cards in deck");
