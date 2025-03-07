@@ -1,4 +1,7 @@
-use std::io::{self, stdout, Stdout};
+use std::{
+    error::Error,
+    io::{self, stdout, Stdout},
+};
 
 use crossterm::{
     event::{self, Event, KeyCode, KeyEvent, KeyEventKind},
@@ -48,8 +51,8 @@ pub struct AppConfig {
 }
 
 impl ArkanaApp {
-    pub fn run(&mut self, terminal: &mut Tui, config: AppConfig) -> io::Result<()> {
-        self.cards = get_deck(config.file_path, config.has_headers).unwrap();
+    pub fn run(&mut self, terminal: &mut Tui, config: AppConfig) -> Result<(), Box<dyn Error>> {
+        self.cards = get_deck(config.file_path, config.has_headers)?;
 
         if self.cards.len() < 1 {
             panic!("No cards in deck");

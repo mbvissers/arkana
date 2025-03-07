@@ -78,6 +78,7 @@ dependencies = [
  "csv",
  "rand",
  "ratatui",
+ "scopeguard",
 ]
 
 [[package]]

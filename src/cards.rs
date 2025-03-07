@@ -15,8 +15,8 @@ pub fn get_deck(path: String, has_headers: bool) -> Result<Vec<Card>, Box<dyn Er
         path.as_str()
     };
 
-    let file = File::open(Path::new(path))
-        .expect(String::from(format!("Could not open file {}", path)).as_str());
+    let file = File::open(Path::new(path))?;
+
     let mut reader = csv::ReaderBuilder::new()
         .has_headers(has_headers)
         .from_reader(file);
