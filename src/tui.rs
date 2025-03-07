@@ -44,15 +44,14 @@ pub fn restore() -> io::Result<()> {
 
 // TODO: App Config (file path, delim, header, etc.)
 pub struct AppConfig {
-    pub file_path: Option<String>,
-    pub delimiter: Option<String>,
-    pub header: Option<bool>,
+    pub file_path: String,
+    pub delimiter: String,
+    pub has_headers: bool,
 }
 
 impl ArkanaApp {
-    // TODO: Use AppConfig
     pub fn run(&mut self, terminal: &mut Tui, config: AppConfig) -> io::Result<()> {
-        self.cards = get_deck(config.file_path.unwrap()).unwrap();
+        self.cards = get_deck(config.file_path, config.has_headers).unwrap();
 
         if self.cards.len() < 1 {
             panic!("No cards in deck");

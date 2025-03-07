@@ -10,8 +10,15 @@ pub struct Args {
 
     #[arg(
         short = 'd',
-        long = "Delimiter",
+        long = "delimiter",
         help = "Choose delimiter, default ','"
     )]
     pub delim: Option<String>,
+
+    #[arg(
+        long = "no-header",
+        help = "Set flag if CSV has no header row",
+        action = clap::ArgAction::SetTrue,
+    )]
+    pub no_header: Option<bool>,
 }

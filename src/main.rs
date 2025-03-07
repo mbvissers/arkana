@@ -14,7 +14,6 @@ fn main() -> io::Result<()> {
     let mut terminal = tui::init()?;
 
     let delim = ",";
-    let header = true;
 
     // Set Path
     let path = match args.csv {
@@ -22,10 +21,16 @@ fn main() -> io::Result<()> {
         _ => String::from(""),
     };
 
+    // Set has_headers
+    let has_headers = match args.no_header.unwrap() {
+        true => false,
+        false => true,
+    };
+
     let config = AppConfig {
-        file_path: Some(String::from(path)),
-        delimiter: Some(String::from(delim)),
-        header: Some(header),
+        file_path: String::from(path),
+        delimiter: String::from(delim),
+        has_headers,
     };
 
     let app_result = ArkanaApp::default().run(&mut terminal, config);
