@@ -9,11 +9,12 @@ pub struct Args {
     pub csv: Option<String>,
 
     #[arg(
-        short = 'd',
-        long = "delimiter",
-        help = "Choose delimiter, default ','"
+        short = 's',
+        long = "semi-colon",
+        help = "Set flag if delimiter is semi-colon",
+        action = clap::ArgAction::SetTrue,
     )]
-    pub delim: Option<String>,
+    pub semi_colon: Option<bool>,
 
     #[arg(
         long = "no-header",

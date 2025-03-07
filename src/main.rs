@@ -13,8 +13,6 @@ fn main() -> io::Result<()> {
     let args = Args::parse();
     let mut terminal = tui::init()?;
 
-    let delim = ",";
-
     // Set Path
     let path = match args.csv {
         Some(path) => path,
@@ -29,7 +27,6 @@ fn main() -> io::Result<()> {
 
     let config = AppConfig {
         file_path: String::from(path),
-        delimiter: String::from(delim),
         has_headers,
     };
 

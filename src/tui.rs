@@ -42,10 +42,8 @@ pub fn restore() -> io::Result<()> {
     Ok(())
 }
 
-// TODO: App Config (file path, delim, header, etc.)
 pub struct AppConfig {
     pub file_path: String,
-    pub delimiter: String,
     pub has_headers: bool,
 }
 
