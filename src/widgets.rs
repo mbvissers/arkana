@@ -12,14 +12,15 @@ pub fn render_title(frame: &mut Frame, area: Rect) {
     let text = Text::from(Line::from(Span::styled(
         " Arkana ",
         Style::default()
-            .fg(Color::Blue)
+            .fg(Color::Black)
+            .bg(Color::Yellow)
             .add_modifier(Modifier::BOLD),
     )));
     frame.render_widget(text.alignment(Alignment::Center), area);
 }
 
-pub fn render_counter(frame: &mut Frame, area: Rect, card_counter: &usize, card_length: &usize) {
-    let cards_viewed = card_counter.to_string();
+pub fn render_counter(frame: &mut Frame, area: Rect, spent_cards: &usize, card_length: &usize) {
+    let cards_viewed = spent_cards.to_string();
     let cards_left = card_length.to_string();
     let counter_text = Text::from(vec![Line::from(vec![
         "Cards viewed: ".into(),

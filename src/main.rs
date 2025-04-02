@@ -19,21 +19,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         tui::restore().unwrap();
     }
 
-    // Set Path
-    let path = match args.csv {
-        Some(path) => path,
-        _ => String::from(""),
-    };
-
-    // Set has_headers
-    let has_headers = match args.no_header.unwrap() {
-        true => false,
-        false => true,
-    };
+    let path = args.csv.unwrap_or_default();
+    let no_headers = args.no_header.unwrap_or(false);
 
     let config = AppConfig {
-        file_path: String::from(path),
-        has_headers,
+        file_path: path,
+        has_headers: !no_headers,
     };
 
     let app_result = ArkanaApp::default().run(&mut terminal, config);
