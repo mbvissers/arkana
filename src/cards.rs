@@ -10,7 +10,7 @@ pub struct Card {
 
 pub fn get_deck(path: String, has_headers: bool) -> Result<Vec<Card>, Box<dyn Error>> {
     let path = if path == "" {
-        "src/csv/hiragana_flashcards.csv"
+        "src/csv/hiragana_test.csv"
     } else {
         path.as_str()
     };

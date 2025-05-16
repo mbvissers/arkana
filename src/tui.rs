@@ -1,6 +1,7 @@
 use std::{
     error::Error,
     io::{self, stdout, Stdout},
+    ops::Add,
 };
 
 use crossterm::{
@@ -28,9 +29,7 @@ pub struct ArkanaApp {
     card_counter: usize, // Card counter 0 indexed
     show_back: bool,
     exit: bool,
-    spent_cards: Vec<Card>,
     cards: Vec<Card>,
-    current_card: Card,
 }
 
 pub fn init() -> io::Result<Tui> {
@@ -61,9 +60,6 @@ impl ArkanaApp {
         // Shuffle cards
         self.cards.shuffle(&mut thread_rng());
 
-        self.spent_cards = vec![];
-        self.current_card = self.cards.pop().unwrap();
-
         while !self.exit {
             terminal.draw(|frame| self.render_frame(frame))?;
             self.handle_events()?;
@@ -87,10 +83,15 @@ impl ArkanaApp {
         widgets::render_counter(
             frame,
             counter_area,
-            &self.spent_cards.len(),
-            &self.cards.len(),
+            &self.card_counter.add(1),
+            &self.cards.len().saturating_sub(self.card_counter.add(1)),
         );
-        widgets::render_card(frame, body_area, &self.current_card, self.show_back);
+        widgets::render_card(
+            frame,
+            body_area,
+            &self.cards[self.card_counter],
+            self.show_back,
+        );
         widgets::render_controls(frame, footer_area);
     }
 
@@ -115,30 +116,22 @@ impl ArkanaApp {
 
     fn increment_counter(&mut self) {
         if self.show_back {
-            if let Some(card) = self.cards.pop() {
-                // Move current card to spent pile before replacing
-                self.spent_cards
-                    .push(std::mem::replace(&mut self.current_card, card));
-                self.card_counter += 1;
-            } else {
+            if self.card_counter > self.cards.len().saturating_sub(1) {
                 self.exit();
             }
+            self.card_counter += 1;
         }
         self.show_back = !self.show_back;
     }
 
     fn decrement_counter(&mut self) {
-        if let Some(card) = self.spent_cards.pop() {
-            // Move current card back to the deck before replacing
-            self.cards
-                .push(std::mem::replace(&mut self.current_card, card));
-            // saturating_sub makes sure we don't go below 0
-            self.card_counter = self.card_counter.saturating_sub(1);
-            self.show_back = true;
-        }
+        // saturating_sub makes sure we don't go below 0
+        self.card_counter = self.card_counter.saturating_sub(1);
+        self.show_back = true;
     }
 
     fn exit(&mut self) {
+        // TODO: "Are you sure" prompt
         self.exit = true;
     }
 }

@@ -30,7 +30,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     let app_result = ArkanaApp::default().run(&mut terminal, config);
 
     match &app_result {
-        Ok(_) => app_result,
+        Ok(_) => {
+            println!("Exited safely");
+            app_result
+        }
         Err(e) => {
             eprintln!("Error: {}", e);
             app_result
