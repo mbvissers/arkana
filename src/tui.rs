@@ -12,7 +12,7 @@ use crossterm::{
 };
 use rand::{seq::SliceRandom, thread_rng};
 use ratatui::{
-    layout::{Constraint, Flex, Layout},
+    layout::{Constraint, Direction, Flex, Layout, Rect},
     prelude::CrosstermBackend,
     Frame, Terminal,
 };
@@ -30,6 +30,7 @@ pub struct ArkanaApp {
     show_back: bool,
     exit: bool,
     cards: Vec<Card>,
+    show_confirmation_bar: bool,
 }
 
 pub fn init() -> io::Result<Tui> {
@@ -83,7 +84,7 @@ impl ArkanaApp {
         widgets::render_counter(
             frame,
             counter_area,
-            &self.card_counter.add(1),
+            &self.card_counter,
             &self.cards.len().saturating_sub(self.card_counter.add(1)),
         );
         widgets::render_card(
@@ -92,7 +93,12 @@ impl ArkanaApp {
             &self.cards[self.card_counter],
             self.show_back,
         );
-        widgets::render_controls(frame, footer_area);
+
+        if self.show_confirmation_bar {
+            widgets::render_confirmation_bar(frame, footer_area);
+        } else {
+            widgets::render_controls(frame, footer_area);
+        }
     }
 
     fn handle_events(&mut self) -> io::Result<()> {
@@ -106,10 +112,25 @@ impl ArkanaApp {
     }
 
     fn handle_key_event(&mut self, key_event: KeyEvent) {
+        use KeyCode::*;
+
+        if self.show_confirmation_bar {
+            self.handle_confirmation_key(key_event.code);
+            return;
+        }
+
         match key_event.code {
-            KeyCode::Char('q') => self.exit(),
-            KeyCode::Left | KeyCode::Char('h') => self.decrement_counter(),
-            KeyCode::Right | KeyCode::Char('l') => self.increment_counter(),
+            Char('q') => self.exit(),
+            Left | Char('h') => self.decrement_counter(),
+            Right | Char('l') => self.increment_counter(),
+            _ => {}
+        }
+    }
+
+    fn handle_confirmation_key(&mut self, code: KeyCode) {
+        match code {
+            KeyCode::Char('y') => self.exit = true,
+            KeyCode::Char('n') | KeyCode::Char('q') => self.show_confirmation_bar = false,
             _ => {}
         }
     }
@@ -118,8 +139,9 @@ impl ArkanaApp {
         if self.show_back {
             if self.card_counter > self.cards.len().saturating_sub(1) {
                 self.exit();
+            } else {
+                self.card_counter += 1;
             }
-            self.card_counter += 1;
         }
         self.show_back = !self.show_back;
     }
@@ -132,6 +154,6 @@ impl ArkanaApp {
 
     fn exit(&mut self) {
         // TODO: "Are you sure" prompt
-        self.exit = true;
+        self.show_confirmation_bar = !self.show_confirmation_bar;
     }
 }

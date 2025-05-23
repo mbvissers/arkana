@@ -2,7 +2,7 @@ use ratatui::{
     layout::{Alignment, Rect},
     style::{Color, Modifier, Style, Stylize},
     text::{Line, Span, Text},
-    widgets::Paragraph,
+    widgets::{Clear, Paragraph},
     Frame,
 };
 
@@ -95,5 +95,25 @@ pub fn render_controls(frame: &mut Frame, area: Rect) {
 
     let paragraph = Paragraph::new(text).alignment(Alignment::Center);
 
+    frame.render_widget(paragraph, area);
+}
+
+pub fn render_confirmation_bar(frame: &mut Frame, area: Rect) {
+    let text = Text::from(vec![Line::from(vec![
+        Span::styled(
+            " Are you sure? ",
+            Style::default().add_modifier(Modifier::BOLD),
+        ),
+        Span::styled(
+            " (y)es / (n)o ",
+            Style::default().add_modifier(Modifier::BOLD),
+        ),
+    ])]);
+
+    let paragraph = Paragraph::new(text)
+        .alignment(ratatui::layout::Alignment::Center)
+        .style(Style::new().bg(Color::Red));
+
+    frame.render_widget(Clear, area);
     frame.render_widget(paragraph, area);
 }
